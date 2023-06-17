@@ -14,6 +14,9 @@ Utilities for manipulating strings in C.
 #include <stdbool.h>
 #include <stdarg.h>
 
+#include "char_array/char_array.h"
+#include "utf8proc/utf8proc.h"
+
 #define UTF8PROC_OPTIONS_BASE UTF8PROC_NULLTERM | UTF8PROC_STABLE
 
 // Unicode normalization forms
@@ -66,5 +69,32 @@ bool utf8_is_punctuation(int cat);
 bool utf8_is_symbol(int cat);
 bool utf8_is_separator(int cat);
 bool utf8_is_whitespace(int32_t ch); 
+
+bool string_is_digit(char *str, size_t len);
+bool string_is_ignorable(char *str, size_t len);
+
+ssize_t string_next_hyphen_index(char *str, size_t len);
+bool string_contains(char *str, char *sub);
+bool string_contains_hyphen(char *str);
+bool string_contains_hyphen_len(char *str, size_t len);
+
+ssize_t string_next_codepoint_len(char *str, uint32_t codepoint, size_t len);
+ssize_t string_next_codepoint(char *str, uint32_t codepoint);
+
+ssize_t string_next_period_len(char *str, size_t len);
+ssize_t string_next_period(char *str);
+
+bool string_contains_period_len(char *str, size_t len);
+bool string_contains_period(char *str);
+
+ssize_t string_next_whitespace_len(char *str, size_t len);
+ssize_t string_next_whitespace(char *str);
+
+size_t string_left_spaces_len(char *str, size_t len);
+size_t string_right_spaces_len(char *str, size_t len);
+char *string_trim(char *str);
+
+size_t string_hyphen_prefix_len(char *str, size_t len);
+size_t string_hyphen_suffix_len(char *str, size_t len);
 
 #endif

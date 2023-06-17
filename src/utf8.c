@@ -504,3 +504,217 @@ inline bool utf8_equal_ignore_separators(const char *str1, const char *str2) {
 
     return utf8_equal_ignore_separators_len(str1, str2, len);
 }
+
+
+bool string_is_digit(char *str, size_t len) {
+    uint8_t *ptr = (uint8_t *)str;
+    size_t idx = 0;
+
+    bool ignorable = true;
+
+    while (idx < len) {
+        int32_t ch;
+        ssize_t char_len = utf8proc_iterate(ptr, len, &ch);
+
+        if (char_len <= 0) break;
+        if (ch == 0) break;
+        if (!(utf8proc_codepoint_valid(ch))) return false;
+
+        int cat = utf8proc_category(ch);
+        if (cat != UTF8PROC_CATEGORY_ND) {
+            return false;
+        }
+
+        ptr += char_len;
+        idx += char_len;
+    }
+
+    return true;
+}
+
+bool string_is_ignorable(char *str, size_t len) {
+    uint8_t *ptr = (uint8_t *)str;
+    size_t idx = 0;
+
+    bool ignorable = true;
+
+    while (idx < len) {
+        int32_t ch;
+        ssize_t char_len = utf8proc_iterate(ptr, len, &ch);
+
+        if (char_len <= 0) break;
+        if (ch == 0) break;
+        if (!(utf8proc_codepoint_valid(ch))) return false;
+
+        int cat = utf8proc_category(ch);
+        if (!utf8_is_separator(cat) && !utf8_is_hyphen(ch)) {
+            return false;
+        }
+
+        ptr += char_len;
+        idx += char_len;
+    }
+
+    return true;
+}
+
+ssize_t string_next_hyphen_index(char *str, size_t len) {
+    uint8_t *ptr = (uint8_t *)str;
+    int32_t codepoint;
+    ssize_t idx = 0;
+
+    while (idx < len) {
+        ssize_t char_len = utf8proc_iterate(ptr, len, &codepoint);
+        
+        if (char_len <= 0 || codepoint == 0) break;
+
+        if (utf8_is_hyphen(codepoint)) return idx;
+        ptr += char_len;
+        idx += char_len;
+    }
+    return -1;
+}
+
+inline bool string_contains_hyphen_len(char *str, size_t len) {
+    return string_next_hyphen_index(str, len) >= 0;
+}
+
+inline bool string_contains_hyphen(char *str) {
+    return string_next_hyphen_index(str, strlen(str)) >= 0;
+}
+
+ssize_t string_next_codepoint_len(char *str, uint32_t codepoint, size_t len) {
+    uint8_t *ptr = (uint8_t *)str;
+    int32_t ch;
+    ssize_t idx = 0;
+
+    while (idx < len) {
+        ssize_t char_len = utf8proc_iterate(ptr, len, &ch);
+
+        if (char_len <= 0 || ch == 0) break;
+
+        if ((uint32_t)ch == codepoint) return idx;
+        ptr += char_len;
+        idx += char_len;
+    }
+    return -1;
+}
+
+ssize_t string_next_codepoint(char *str, uint32_t codepoint) {
+    return string_next_codepoint_len(str, codepoint, strlen(str));
+}
+
+ssize_t string_next_period_len(char *str, size_t len) {
+    return string_next_codepoint_len(str, PERIOD_CODEPOINT, len);
+}
+
+ssize_t string_next_period(char *str) {
+    return string_next_codepoint(str, PERIOD_CODEPOINT);
+}
+
+inline bool string_contains_period_len(char *str, size_t len) {
+    return string_next_codepoint_len(str, PERIOD_CODEPOINT, len) >= 0;
+}
+
+inline bool string_contains_period(char *str) {
+    return string_next_codepoint(str, string_next_codepoint(str, PERIOD_CODEPOINT)) >= 0;
+}
+
+ssize_t string_next_whitespace_len(char *str, size_t len) {
+    uint8_t *ptr = (uint8_t *)str;
+    int32_t ch;
+    ssize_t idx = 0;
+
+    while (idx < len) {
+        ssize_t char_len = utf8proc_iterate(ptr, len, &ch);
+
+        if (char_len <= 0 || ch == 0) break;
+
+        if (utf8_is_whitespace(ch)) return idx;
+        ptr += char_len;
+        idx += char_len;
+    }
+    return -1;
+}
+
+ssize_t string_next_whitespace(char *str) {
+    return string_next_whitespace_len(str, strlen(str));
+}
+
+
+size_t string_right_spaces_len(char *str, size_t len) {
+    size_t spaces = 0;
+
+    uint8_t *ptr = (uint8_t *)str;
+    int32_t ch = 0;
+    ssize_t index = len;
+
+    while (1) {
+        ssize_t char_len = utf8proc_iterate_reversed(ptr, index, &ch);
+
+        if (ch <= 0) break;
+
+        if (!utf8_is_whitespace(ch)) {
+            break;
+        }
+
+        index -= char_len;
+        spaces += char_len;
+    }
+
+    return spaces;
+
+}
+
+inline size_t string_hyphen_prefix_len(char *str, size_t len) {
+    // Strip beginning hyphens
+    int32_t unichr;
+    uint8_t *ptr = (uint8_t *)str;
+    ssize_t char_len = utf8proc_iterate(ptr, len, &unichr);
+    if (utf8_is_hyphen(unichr)) {
+        return (size_t)char_len;
+    }
+    return 0;
+}
+
+inline size_t string_hyphen_suffix_len(char *str, size_t len) {
+    // Strip ending hyphens
+    int32_t unichr;
+    uint8_t *ptr = (uint8_t *)str;
+    ssize_t char_len = utf8proc_iterate_reversed(ptr, len, &unichr);
+    if (utf8_is_hyphen(unichr)) {
+        return (size_t)char_len;
+    }
+    return 0;
+}
+
+size_t string_left_spaces_len(char *str, size_t len) {
+    size_t spaces = 0;
+
+    uint8_t *ptr = (uint8_t *)str;
+    int32_t ch = 0;
+    ssize_t index = 0;
+
+    while (1) {
+        ssize_t char_len = utf8proc_iterate(ptr, len, &ch);
+
+        if (ch <= 0) break;
+
+        if (!utf8_is_whitespace(ch)) {
+            break;
+        }
+        index += char_len;
+        ptr += char_len;
+        spaces += char_len;
+    }
+
+    return spaces;
+}
+
+char *string_trim(char *str) {
+    size_t len = strlen(str);
+    size_t left_spaces = string_left_spaces_len(str, len);
+    size_t right_spaces = string_right_spaces_len(str, len);
+    char *ret = strndup(str + left_spaces, len - left_spaces - right_spaces);
+    return ret;
+}
