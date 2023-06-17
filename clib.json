@@ -6,7 +6,9 @@
   "keywords": ["utf8", "string", "unicode"],
   "license": "MIT",
   "dependencies": {
-    "goodcleanfun/utf8proc": "*"
+    "goodcleanfun/utf8proc": "*",
+    "goodcleanfun/char_array": "*",
+    "clibs/strndup": "*"
   },
   "src": ["src/utf8.h", "src/utf8.c"]
 }
