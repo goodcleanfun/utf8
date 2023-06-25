@@ -14,7 +14,6 @@ Utilities for manipulating strings in C.
 #include <stdbool.h>
 #include <stdarg.h>
 
-#include "char_array/char_array.h"
 #include "utf8proc/utf8proc.h"
 
 #define UTF8PROC_OPTIONS_BASE UTF8PROC_NULLTERM | UTF8PROC_STABLE
