@@ -13,6 +13,7 @@ Utilities for manipulating strings in C.
 #include <ctype.h>
 #include <stdbool.h>
 #include <stdarg.h>
+#include <sys/types.h>
 
 #include "num_arrays/uint32_array.h"
 #include "utf8proc/utf8proc.h"
