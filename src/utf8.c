@@ -199,10 +199,10 @@ ssize_t utf8_len(const char *str, size_t len) {
 
         if (ch == 0) break;
         remaining -= char_len;
-        if (remaining == 0) break;
 
         ptr += char_len;
         num_utf8_chars++;
+        if (remaining == 0) break;
     }
 
     return num_utf8_chars;
