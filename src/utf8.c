@@ -715,6 +715,12 @@ char *string_trim(char *str) {
     size_t len = strlen(str);
     size_t left_spaces = string_left_spaces_len(str, len);
     size_t right_spaces = string_right_spaces_len(str, len);
-    char *ret = strndup(str + left_spaces, len - left_spaces - right_spaces);
-    return ret;
+
+    size_t n_trim = len - left_spaces - right_spaces;
+    char *dup = malloc(n_trim + 1);
+    if (dup) {
+        strncpy(dup, str + left_spaces, n_trim);
+        dup[n] = '\0';
+    }
+    return dup;
 }

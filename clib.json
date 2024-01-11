@@ -7,8 +7,7 @@
   "license": "MIT",
   "dependencies": {
     "goodcleanfun/utf8proc": "*",
-    "goodcleanfun/num_arrays": "*",
-    "clibs/strndup": "*"
+    "goodcleanfun/num_arrays": "*"
   },
   "src": ["src/utf8.h", "src/utf8.c"]
 }
