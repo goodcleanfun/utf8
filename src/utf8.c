@@ -720,7 +720,7 @@ char *string_trim(char *str) {
     char *dup = malloc(n_trim + 1);
     if (dup) {
         strncpy(dup, str + left_spaces, n_trim);
-        dup[n] = '\0';
+        dup[n_trim] = '\0';
     }
     return dup;
 }
