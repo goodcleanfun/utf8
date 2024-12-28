@@ -15,7 +15,7 @@ Utilities for manipulating strings in C.
 #include <stdarg.h>
 #include <sys/types.h>
 
-#include "num_arrays/uint32_array.h"
+#include "num_array/uint32_array.h"
 #include "utf8proc/utf8proc.h"
 
 #define UTF8PROC_OPTIONS_BASE UTF8PROC_NULLTERM | UTF8PROC_STABLE
